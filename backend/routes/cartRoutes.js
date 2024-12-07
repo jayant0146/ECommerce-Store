@@ -49,4 +49,58 @@ router.post('/:userId', (req, res) => {
     res.json({ message: 'Item added to cart', cart: data.carts[userId] });
 });
 
+router.post('/checkout/:userId', (req, res) => {
+    const { userId } = req.params;
+    const { discountCode } = req.body;
+  
+    const cart = data.carts[userId];
+    if (!cart || cart.length === 0) {
+      return res.status(400).json({ error: 'Cart is empty. Add items to checkout.' });
+    }
+  
+    const detailedCart = cart.map((item) => {
+        const product = data.products.find((p) => p.id === item.productId);
+        return {
+            productId: item.productId,
+            name: product?.name || 'Unknown Product',
+            price: product?.price || 0,
+            quantity: item.quantity,
+            subtotal: (product?.price || 0) * item.quantity,
+        };
+    });
+
+    let total = detailedCart.reduce((sum, item) => sum + item.subtotal, 0);
+    let discount = 0;
+    if (discountCode) {
+        const validCode = data.discountCodes.find((code) => code.code === discountCode);
+        if (!validCode) {
+            return res.status(400).json({ error: 'Invalid discount code.' });
+        }
+        discount = total * 0.1;
+        total -= discount;
+        validCode.used = true;
+    }
+  
+    const orderId = `order-${Date.now()}`;
+    data.orders.push({
+        orderId,
+        userId,
+        items: detailedCart,
+        total,
+        discount,
+        discountCode: discountCode || null,
+    });
+    data.carts[userId] = [];
+  
+    res.json({
+      message: 'Order placed successfully',
+      order: {
+        orderId,
+        items: detailedCart,
+        discount,
+        total,
+      },
+    });
+  });
+
 export default router;
