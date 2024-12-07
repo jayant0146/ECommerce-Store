@@ -18,7 +18,7 @@ const data = {
     ],
   
     discountCodes: [ 
-      // { code: 'DISCOUNT10', usedBy: [], discountPercentage: 10 }
+      { code: 'DISCOUNT10', used:false, discountPercentage: 10 }
     ],
   };
   

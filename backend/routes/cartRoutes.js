@@ -21,6 +21,8 @@ router.get('/:userId', (req, res) => {
 });
 
 
+
+
 // Add an item to the cart
 router.post('/:userId', (req, res) => {
     const { userId } = req.params;
@@ -49,6 +51,8 @@ router.post('/:userId', (req, res) => {
     res.json({ message: 'Item added to cart', cart: data.carts[userId] });
 });
 
+
+
 router.post('/checkout/:userId', (req, res) => {
     const { userId } = req.params;
     const { discountCode } = req.body;
@@ -76,7 +80,10 @@ router.post('/checkout/:userId', (req, res) => {
         if (!validCode) {
             return res.status(400).json({ error: 'Invalid discount code.' });
         }
-        discount = total * 0.1;
+      
+        const discountPercentage = validCode.discountPercentage;
+        discount = total * 0.01 * discountPercentage;
+        console.log(discount);
         total -= discount;
         validCode.used = true;
     }
