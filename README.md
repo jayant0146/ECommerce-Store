@@ -14,7 +14,7 @@ An interactive e-commerce web application where users can browse products, add i
 ## **API Endpoints**
 
 ### **Products**
-- **GET /api/products**  
+- **GET /cart/products**  
   Fetches a list of all available products.
 
   **Response:**
@@ -25,5 +25,45 @@ An interactive e-commerce web application where users can browse products, add i
       "name": "Jeans",
       "price": 1000,
       "image": "/images/jeans.jpg"
+    }
+  ]
+
+- **POST /cart/:userId**  
+  Adds a product to the cart for a specific user.
+
+  **Request Body:**
+  ```json
+  [
+    {
+        "productId": 1,
+        "quantity": 2
+    }
+
+  ]
+
+  **Response Body:**
+  ```json
+  [
+    {
+        "message": "Product added to cart successfully!"
+    }
+  ]
+
+- **GET /cart/:userId**  
+  Retrieves the cart for a specific user.
+
+  **Response:**
+  ```json
+  [
+    {
+        "cart": [
+            {
+            "productId": 1,
+            "name": "Jeans",
+            "price": 1000,
+            "quantity": 2,
+            "subtotal": 2000
+            }
+        ]
     }
   ]
