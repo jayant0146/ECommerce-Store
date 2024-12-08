@@ -41,6 +41,8 @@ router.post('/discount-code', (req, res) => {
     });
 });
 
+
+
 // Get admin stats
 router.get('/stats', (req, res) => {
   const totalItemsPurchased = data.orders.reduce(

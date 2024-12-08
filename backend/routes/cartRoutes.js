@@ -80,6 +80,9 @@ router.post('/checkout/:userId', (req, res) => {
         if (!validCode) {
             return res.status(400).json({ error: 'Invalid discount code.' });
         }
+        if (validCode.used == true) {
+            return res.status(400).json({ error: 'Code already used, try something else' });
+        }
       
         const discountPercentage = validCode.discountPercentage;
         discount = total * 0.01 * discountPercentage;
