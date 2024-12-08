@@ -7,14 +7,14 @@ import Products from '../components/Products'
 import Newsletter from '../components/Newsletter'
 import Footer from '../components/Footer'
 
-const Home = () => {
+const Home = ({ userId }) => {
     return (
         <div>
             <Announcement />
             <Navbar />
             <Slider />
             <Categories />
-            <Products />
+            <Products userId={userId}/>
             <Newsletter />
             <Footer />
         </div>

@@ -87,7 +87,7 @@ const Navbar = () => {
         <Right>
             <Link to={'/cart'}>
                 <MenuItem>
-                    <Badge badgeContent={2} color="primary"><ShoppingCartCheckoutSharpIcon /></Badge>
+                    <Badge  color="primary"><ShoppingCartCheckoutSharpIcon /> CART</Badge>
                 </MenuItem>
             </Link>
         </Right>

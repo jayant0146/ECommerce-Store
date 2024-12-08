@@ -2,6 +2,7 @@ import { FavoriteBorderOutlined, SearchOutlined, ShoppingCartOutlined } from '@m
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { styled } from 'styled-components'
+import axios from 'axios';
 
 const Info = styled.div`
   opacity: 0;
@@ -64,13 +65,27 @@ const Icon = styled.div`
   }
 `;
 
-const Product = ({ item }) => {
+const Product = ({ item, userId }) => {
+
+  const addToCart = async () => {
+    try {
+      const response = await axios.post(`http://localhost:5000/cart/${userId}`, {
+        quantity: 1,
+        productId: item.id// Default quantity to add
+      });
+      alert(response.data.message || "Item added to cart!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Failed to add item to cart. Please try again.");
+    }
+  };
+
   return (
     <Container>
       <Circle />
       <Image src={item.img} />
       <Info>
-        <Icon>
+        <Icon onClick={addToCart}>
           <ShoppingCartOutlined />
         </Icon>
         <Icon>

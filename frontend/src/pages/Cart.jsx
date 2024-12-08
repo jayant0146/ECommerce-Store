@@ -3,6 +3,7 @@ import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import axios from "axios"
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div``;
 
@@ -140,12 +141,17 @@ const Button = styled.button`
 const Cart = ({ userId }) => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const [discountCode, setDiscountCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCart = async () => {
       try {        
-        const response = await axios.get(`http://localhost:5000/cart/:${userId}`);
-        console.log(response)
+        const response = await axios.get(`http://localhost:5000/cart/${userId}`);
         setCart(response.data.cart);
         setTotal(response.data.total);
       } catch (error) {
@@ -156,6 +162,75 @@ const Cart = ({ userId }) => {
     fetchCart();
   }, [userId]);
 
+  // const handleQuantity = (productId, type) => {
+  //   setCart((prevCart) => {
+  //     return prevCart.map((item) => {
+  //       if (item.productId === productId) {
+  //         let newQuantity = item.quantity;
+  
+  //         if (type === "increment") {
+  //           newQuantity += 1; // Increment quantity
+  //         } else if (type === "decrement" && newQuantity > 1) {
+  //           newQuantity -= 1; // Decrement quantity, but ensure it doesn't go below 1
+  //         }
+  
+  //         return { ...item, quantity: newQuantity }; // Return updated item with new quantity
+  //       }
+  //       return item; // Return other items as is
+  //     });
+  //   });
+  // };
+
+
+const handleQuantity = async (productId, type) => {
+  const quantityChange = type === "increment" ? 1 : -1;
+
+  try {
+    const response = await axios.post(`http://localhost:5000/cart/quantity/${productId}`, {
+      userId, // Replace with the actual user ID
+      quantity: quantityChange,
+    });
+
+    // Update the cart state with the new data from the server
+    console.log(response);
+    setCart(response.data.cart);
+    setTotal(response.data.total);
+    // setCart((prevCart) =>
+    //   prevCart.map((item) =>
+    //     item.productId === productId
+    //       ? { ...item, quantity: item.quantity + quantityChange }
+    //       : item
+    //   )
+    // );
+  } catch (error) {
+    console.error("Error updating quantity:", error);
+  }
+};
+
+  
+  
+  
+  const handleCheckout = async () => {
+    try {
+        const response = await axios.post(`http://localhost:5000/cart/checkout/${userId}`, {
+            discountCode,
+        });
+        console.log(response)
+        const { message, order } = response.data;
+        navigate("/checkout", { state: { items: order.items, discount: order.discount, total: order.total } });
+        setMessage(message);
+        setDiscount(order.discount)
+
+        // Reset cart UI
+        setCart([]);
+        setTotal(order.total);
+        setDiscountCode("");
+    } catch (err) {
+        console.error("Checkout Error:", err);
+        setError(err.response?.data?.error || "Checkout failed.");
+    }
+};
+
   return (
     <Container>
       <Wrapper>
@@ -165,7 +240,9 @@ const Cart = ({ userId }) => {
           <TopTexts>
             <TopText>Shopping Bag ({cart.length})</TopText> 
           </TopTexts>
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
+          <TopButton type="filled">
+            CHECKOUT NOW
+          </TopButton>
         </Top>
 
         <Bottom>
@@ -187,11 +264,12 @@ const Cart = ({ userId }) => {
                   </Details>
                 </ProductDetail>
                 <PriceDetail>
-                  <ProductAmountContainer>
-                    <AddCircleOutline />
-                    <ProductAmount>{item.quantity}</ProductAmount>
-                    <RemoveCircleOutline />
-                  </ProductAmountContainer>
+                <ProductAmountContainer>
+                  <AddCircleOutline onClick={() => handleQuantity(item.productId, "increment")} />
+                  <ProductAmount>{item.quantity}</ProductAmount>
+                  <RemoveCircleOutline onClick={() => handleQuantity(item.productId, "decrement")} />
+                </ProductAmountContainer>
+
                   <ProductPrice>${item.subtotal}</ProductPrice>
                 </PriceDetail>
               </Product>
@@ -207,8 +285,19 @@ const Cart = ({ userId }) => {
             </SummaryItem>
 
             <SummaryItem>
+                <label>Coupon</label>
+                <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    placeholder="Enter code"
+                  />
+                <button onClick={handleCheckout}> Apply </button>
+            </ SummaryItem>
+
+            <SummaryItem>
               <SummaryItemText>Discount</SummaryItemText>
-              <SummaryItemPrice>$-5.90</SummaryItemPrice>
+              <SummaryItemPrice>${}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
