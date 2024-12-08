@@ -85,9 +85,11 @@ const Navbar = () => {
           <Logo> ECommerce Store</Logo>
         </Center>
         <Right>
-          <MenuItem>
-            <Badge badgeContent={2} color="primary"><ShoppingCartCheckoutSharpIcon /></Badge>
-          </MenuItem>
+            <Link to={'/cart'}>
+                <MenuItem>
+                    <Badge badgeContent={2} color="primary"><ShoppingCartCheckoutSharpIcon /></Badge>
+                </MenuItem>
+            </Link>
         </Right>
       </Wrapper>
     </Container>

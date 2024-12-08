@@ -2,7 +2,7 @@ import express from "express";
 import colors from "colors";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
-
+import cors from "cors";
 import cartRoutes from "./routes/cartRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
@@ -12,6 +12,7 @@ const app = express();
 connectDB();
 
 app.use(express.json()); 
+app.use(cors());
 app.use('/cart', cartRoutes);
 app.use('/admin', adminRoutes);
 
