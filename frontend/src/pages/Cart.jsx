@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const Container = styled.div``;
 
@@ -162,32 +163,13 @@ const Cart = ({ userId }) => {
     fetchCart();
   }, [userId]);
 
-  // const handleQuantity = (productId, type) => {
-  //   setCart((prevCart) => {
-  //     return prevCart.map((item) => {
-  //       if (item.productId === productId) {
-  //         let newQuantity = item.quantity;
-  
-  //         if (type === "increment") {
-  //           newQuantity += 1; // Increment quantity
-  //         } else if (type === "decrement" && newQuantity > 1) {
-  //           newQuantity -= 1; // Decrement quantity, but ensure it doesn't go below 1
-  //         }
-  
-  //         return { ...item, quantity: newQuantity }; // Return updated item with new quantity
-  //       }
-  //       return item; // Return other items as is
-  //     });
-  //   });
-  // };
-
 
 const handleQuantity = async (productId, type) => {
   const quantityChange = type === "increment" ? 1 : -1;
 
   try {
     const response = await axios.post(`http://localhost:5000/cart/quantity/${productId}`, {
-      userId, // Replace with the actual user ID
+      userId, 
       quantity: quantityChange,
     });
 
@@ -195,41 +177,11 @@ const handleQuantity = async (productId, type) => {
     console.log(response);
     setCart(response.data.cart);
     setTotal(response.data.total);
-    // setCart((prevCart) =>
-    //   prevCart.map((item) =>
-    //     item.productId === productId
-    //       ? { ...item, quantity: item.quantity + quantityChange }
-    //       : item
-    //   )
-    // );
   } catch (error) {
     console.error("Error updating quantity:", error);
   }
 };
 
-  
-  
-  
-  const handleCheckout = async () => {
-    try {
-        const response = await axios.post(`http://localhost:5000/cart/checkout/${userId}`, {
-            discountCode,
-        });
-        console.log(response)
-        const { message, order } = response.data;
-        navigate("/checkout", { state: { items: order.items, discount: order.discount, total: order.total } });
-        setMessage(message);
-        setDiscount(order.discount)
-
-        // Reset cart UI
-        setCart([]);
-        setTotal(order.total);
-        setDiscountCode("");
-    } catch (err) {
-        console.error("Checkout Error:", err);
-        setError(err.response?.data?.error || "Checkout failed.");
-    }  
-};
 
 const handleCoupon = async () => {
   try {
@@ -237,10 +189,9 @@ const handleCoupon = async () => {
           discountCode,
       });
       console.log(response)
-      const { message, order } = response.data;
-      setMessage(message);
+      const { order } = response.data;
       setDiscount(order.discount)
-      
+
       navigate("/checkout", { state: { items: order.items, discount: order.discount, total: order.total } });
       // Reset cart UI
       setCart([]);
@@ -254,10 +205,10 @@ const handleCoupon = async () => {
 
   return (
     <Container>
+      <Navbar />
       <Wrapper>
         <Title>WHAT I HAVE IN MY BAG :)</Title>
         <Top>
-          <TopButton>CONTINUE SHOPPING</TopButton>
           <TopTexts>
             <TopText>Shopping Bag ({cart.length})</TopText> 
           </TopTexts>
@@ -324,7 +275,7 @@ const handleCoupon = async () => {
               <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPrice>${total}</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECKOUT NOW</Button>
+            <Button onClick={handleCoupon}>CHECKOUT NOW</Button>
           </Summary>
         </Bottom>
       </Wrapper>

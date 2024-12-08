@@ -1,6 +1,5 @@
 import { FavoriteBorderOutlined, SearchOutlined, ShoppingCartOutlined } from '@mui/icons-material';
 import React from 'react'
-import { Link } from 'react-router-dom';
 import { styled } from 'styled-components'
 import axios from 'axios';
 
@@ -89,7 +88,7 @@ const Product = ({ item, userId }) => {
           <ShoppingCartOutlined />
         </Icon>
         <Icon>
-          <Link to={'/productlist'}> <SearchOutlined /></Link>
+          <SearchOutlined />
         </Icon>
         <Icon>
           <FavoriteBorderOutlined />

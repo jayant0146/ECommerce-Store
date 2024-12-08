@@ -10,7 +10,6 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -90,6 +89,8 @@ const Navbar = () => {
                     <Badge  color="primary"><ShoppingCartCheckoutSharpIcon /> CART</Badge>
                 </MenuItem>
             </Link>
+            <Link to={'/stats'}><MenuItem>STATS</MenuItem></Link>
+            <Link to={'/discount'}><MenuItem>DISCOUNT CODE</MenuItem></Link>
         </Right>
       </Wrapper>
     </Container>
