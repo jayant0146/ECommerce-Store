@@ -228,8 +228,29 @@ const handleQuantity = async (productId, type) => {
     } catch (err) {
         console.error("Checkout Error:", err);
         setError(err.response?.data?.error || "Checkout failed.");
-    }
+    }  
 };
+
+const handleCoupon = async () => {
+  try {
+      const response = await axios.post(`http://localhost:5000/cart/checkout/${userId}`, {
+          discountCode,
+      });
+      console.log(response)
+      const { message, order } = response.data;
+      setMessage(message);
+      setDiscount(order.discount)
+      
+      navigate("/checkout", { state: { items: order.items, discount: order.discount, total: order.total } });
+      // Reset cart UI
+      setCart([]);
+      setTotal(order.total);
+      setDiscountCode("");
+  } catch (err) {
+      console.error("Checkout Error:", err);
+      setError(err.response?.data?.error || "Checkout failed.");
+  }  
+}; 
 
   return (
     <Container>
@@ -292,12 +313,12 @@ const handleQuantity = async (productId, type) => {
                     onChange={(e) => setDiscountCode(e.target.value)}
                     placeholder="Enter code"
                   />
-                <button onClick={handleCheckout}> Apply </button>
+                <button onClick={handleCoupon}> Apply </button>
             </ SummaryItem>
 
             <SummaryItem>
               <SummaryItemText>Discount</SummaryItemText>
-              <SummaryItemPrice>${}</SummaryItemPrice>
+              <SummaryItemPrice>${discount}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
